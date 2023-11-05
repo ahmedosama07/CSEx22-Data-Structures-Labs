@@ -166,7 +166,7 @@ public class SingleLinkedList implements ILinkedList {
         if (index < 0 || index >= size())
         {
             System.out.println("Error");
-            return -1;
+            return null;
         }
         SLNode currNode = head;
         for (int i = 0; i < index; ++i)
@@ -271,101 +271,108 @@ public class SingleLinkedList implements ILinkedList {
 
     private void printList()
     {
-        //System.out.println(list.size());
         System.out.print("[");
         SLNode currNode = head;
-            for(int i = 0; i < size(); ++i) {
-                System.out.print(currNode.getElement());
-                currNode = currNode.getNext();
-                if(i != size() - 1)
-                    System.out.print(", ");
-            }
-            System.out.print("]");
+        // if (head == null) return;
+        for(int i = 0; i < size(); ++i) {
+            System.out.print(currNode.getElement());
+            currNode = currNode.getNext();
+            if(i != size() - 1)
+                System.out.print(", ");
+        }
+        System.out.print("]");
     }
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        String sin = sc.nextLine().replaceAll("\\[|\\]", "");
-    	String[] s = sin.split(", ");;
-		//int[] arr = new int[s.length];
-        SingleLinkedList list = new SingleLinkedList();
-        if (!(s.length == 1 && s[0].isEmpty()))
-        {
-            for(int i = 0; i < s.length; ++i)
-        	   {
-                try {
-                    list.add(Integer.parseInt(s[i]));
-                } catch (Exception e) {
+        try (Scanner sc = new Scanner(System.in)) {
+            String sin = sc.nextLine().replaceAll("\\[|\\]", "");
+            String[] s = sin.split(", ");;
+            //int[] arr = new int[s.length];
+            SingleLinkedList list = new SingleLinkedList();
+            if (!(s.length == 1 && s[0].isEmpty()))
+            {
+                for(int i = 0; i < s.length; ++i)
+            	   {
+                    try {
+                        list.add(Integer.parseInt(s[i]));
+                    } catch (Exception e) {
+                        System.out.println("Error");
+                        return;
+                    }
+                   }
+            }
+            
+
+            String[] op = new String[3];
+            op[0] = sc.nextLine();
+            // System.out.println(list.size());
+            // System.out.println(op);
+
+            switch (op[0])
+            {
+                case "add":
+                    op[1] = sc.nextLine();
+                    list.add(Integer.parseInt(op[1]));
+                    list.printList();
+                    break;
+                case "addToIndex":
+                    op[1] = sc.nextLine();
+                    op[2] = sc.nextLine();
+                    list.add(Integer.parseInt(op[1]), Integer.parseInt(op[2]));
+                    if(Integer.parseInt(op[1]) > list.size() || Integer.parseInt(op[1]) < 0) break;
+                    list.printList();
+                    break;
+                case "get":
+                    op[1] = sc.nextLine();
+                    Object val = list.get(Integer.parseInt(op[1]));
+                    if (val == null) break;
+                    System.out.println(val);
+                    break;
+                case "set":
+                    op[1] = sc.nextLine();
+                    op[2] = sc.nextLine();
+                    list.set(Integer.parseInt(op[1]), Integer.parseInt(op[2]));
+                    if(list.size() == 0 || Integer.parseInt(op[1]) >= list.size() || Integer.parseInt(op[1]) < 0) break;
+                    list.printList();
+                    break;
+                case "clear":
+                    list.clear();
+                    list.printList();
+                    break;
+                case "isEmpty":
+                    boolean isEmpty = list.isEmpty();
+                    System.out.println(String.valueOf(isEmpty).substring(0, 1).toUpperCase() + String.valueOf(isEmpty).substring(1));
+                    break;
+                case "remove":
+                    op[1] = sc.nextLine();
+                    int sz = list.size();
+                    list.remove(Integer.parseInt(op[1]));
+                    if ((Integer.parseInt(op[1]) >= list.size() || Integer.parseInt(op[1]) < 0) && sz == list.size()) break;
+                    list.printList();
+                    break;
+                case "sublist":
+                    op[1] = sc.nextLine();
+                    op[2] = sc.nextLine();
+                    SingleLinkedList subList = list.sublist(Integer.parseInt(op[1]), Integer.parseInt(op[2]));
+                    if (subList == null) break;
+                    subList.printList();
+                    break;
+                case "contains":
+                    op[1] = sc.nextLine();
+                    boolean isAvail = list.contains(Integer.parseInt(op[1]));
+                    System.out.println(String.valueOf(isAvail).substring(0, 1).toUpperCase() + String.valueOf(isAvail).substring(1));
+                    break;
+                case "size":
+                    int size = list.size();
+                    System.out.println(size);
+                    break;
+                default:
                     System.out.println("Error");
-                    return;
-                }
-               }
+                    break;
+            }
+            sc.close();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
-      	
-
-        String[] op = new String[3];
-        op[0] = sc.nextLine();
-        // System.out.println(list.size());
-        // System.out.println(op);
-
-        switch (op[0])
-        {
-            case "add":
-                op[1] = sc.nextLine();
-                list.add(Integer.parseInt(op[1]));
-                list.printList();
-                break;
-            case "addToIndex":
-                op[1] = sc.nextLine();
-                op[2] = sc.nextLine();
-                list.add(Integer.parseInt(op[1]), Integer.parseInt(op[2]));
-                list.printList();
-                break;
-            case "get":
-                op[1] = sc.nextLine();
-                int val = (int) list.get(Integer.parseInt(op[1]));
-                if (val < 0) break;
-                System.out.println(val);
-                break;
-            case "set":
-                op[1] = sc.nextLine();
-                op[2] = sc.nextLine();
-                list.set(Integer.parseInt(op[1]), Integer.parseInt(op[2]));
-                list.printList();
-                break;
-            case "clear":
-                list.clear();
-                list.printList();
-                break;
-            case "isEmpty":
-                boolean isEmpty = list.isEmpty();
-                System.out.println(String.valueOf(isEmpty).substring(0, 1).toUpperCase() + String.valueOf(isEmpty).substring(1));
-                break;
-            case "remove":
-                op[1] = sc.nextLine();
-                list.remove(Integer.parseInt(op[1]));
-                if (Integer.parseInt(op[1]) >= list.size() || Integer.parseInt(op[1]) < 0) break;
-                list.printList();
-                break;
-            case "sublist":
-                op[1] = sc.nextLine();
-                op[2] = sc.nextLine();
-                SingleLinkedList subList = list.sublist(Integer.parseInt(op[1]), Integer.parseInt(op[2]));
-                subList.printList();
-                break;
-            case "contains":
-                op[1] = sc.nextLine();
-                boolean isAvail = list.contains(Integer.parseInt(op[1]));
-                System.out.println(String.valueOf(isAvail).substring(0, 1).toUpperCase() + String.valueOf(isAvail).substring(1));
-                break;
-            case "size":
-                int size = list.size();
-                System.out.println(size);
-                break;
-            default:
-                System.out.println("Error");
-                break;
-        }
-        sc.close();
     }
 }
