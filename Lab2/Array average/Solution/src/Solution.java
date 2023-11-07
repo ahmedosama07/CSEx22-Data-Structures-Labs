@@ -14,9 +14,6 @@ public class Solution {
         String sin = sc.nextLine().replaceAll("\\[|\\]", "");
     	String[] s = sin.split(", ");;
 		int[] arr = new int[s.length];
-        for(int i = 0; i < s.length; ++i)
-               arr[i] = Integer.parseInt(s[i]);
-        System.out.println(arr.length);
         double res = 0;
         if (s.length == 1 && s[0].isEmpty())
             arr = new int[]{};
