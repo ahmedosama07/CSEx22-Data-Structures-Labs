@@ -1,8 +1,4 @@
-import java.io.*;
 import java.util.*;
-import java.text.*;
-import java.math.*;
-import java.util.regex.*;
 
 class SLNode<T> {
     private T element;
@@ -351,8 +347,7 @@ public class Evaluator implements IExpressionEvaluator {
     private int B;
     private int C;
 
-    private void readInts() {
-        Scanner sc = new Scanner(System.in);
+    public void readInts(Scanner sc) {
         this.A = Integer.parseInt(sc.nextLine().replaceAll("(a|b|c)=", ""));
         this.B = Integer.parseInt(sc.nextLine().replaceAll("(a|b|c)=", ""));
         this.C = Integer.parseInt(sc.nextLine().replaceAll("(a|b|c)=", ""));
@@ -360,7 +355,7 @@ public class Evaluator implements IExpressionEvaluator {
     }
 
     private int getInts(char c) {
-        int value;
+        int value = -1;
         switch (c) {
             case 'a':
                 value = this.A;
@@ -373,17 +368,19 @@ public class Evaluator implements IExpressionEvaluator {
                 break;
 
             default:
-                throw new RuntimeException("Error");
+                System.out.println("Error");
+                System.exit(0);
+                break;
         }
         return value;
     }
 
     private boolean isOperator(char c) {
-        return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == '(' | c == ')';
     }
 
     private int getPrecedence(char operator) {
-        int precedence;
+        int precedence = -1;
         switch (operator) {
             case '+':
             case '-':
@@ -403,14 +400,16 @@ public class Evaluator implements IExpressionEvaluator {
                 precedence = 0;
                 break;
             default:
-                throw new RuntimeException("Error");
+                System.out.println("Error");
+                System.exit(0);
+                break;
         }
 
         return precedence;
     }
 
     private int performOperation(char operator, int operand1, int operand2) {
-        int value;
+        int value = -1;
         switch (operator) {
             case '+':
                 value = operand1 + operand2;
@@ -423,7 +422,10 @@ public class Evaluator implements IExpressionEvaluator {
                 break;
             case '/':
                 if (operand2 == 0)
-                    throw new RuntimeException("Error");
+                {
+                    System.out.println("Error");
+                    System.exit(0);
+                }
                 value = operand1 / operand2;
                 break;
             case '^':
@@ -432,7 +434,9 @@ public class Evaluator implements IExpressionEvaluator {
                 value = (int) Math.pow(operand1, operand2);
                 break;
             default:
-                throw new RuntimeException("Error");
+                System.out.println("Error");
+                System.exit(0);
+                break;
         }
 
         return value;
@@ -451,31 +455,40 @@ public class Evaluator implements IExpressionEvaluator {
 
         int parentheses = 0;
 
-        for (int i = 0; i < expression.length(); i++) {
+        for (int i = 0; i < expression.length(); ++i) {
             char c = expression.charAt(i);
 
             if (Character.isLetter(c)) {
                 postfix += c;
                 if ((i > 0) && Character.isLetter(expression.charAt(i - 1)))
-                    throw new RuntimeException("Error");
+                {
+                    System.out.println("Error");
+                    System.exit(0);
+                }
             } else if (c == '(') {
                 operatorStack.push(c);
                 ++parentheses;
             } else if (c == ')') {
-                while (!operatorStack.isEmpty() && operatorStack.peek() != '(') {
+                while (!operatorStack.isEmpty() && operatorStack.peek() != '(')
                     postfix += operatorStack.pop();
-                }
-                if (!operatorStack.isEmpty()) {
+
+                if (!operatorStack.isEmpty())
                     operatorStack.pop();
-                }
+
                 --parentheses;
             } else if (isOperator(c)) {
                 if ((i == 0 && c != '-') || (i == expression.length() - 1))
-                    throw new RuntimeException("Error");
+                {
+                    System.out.println("Error");
+                    System.exit(0);
+                }
 
                 if ((i > 0) && isOperator(expression.charAt((i - 1))) && expression.charAt(i - 1) != '('
                         && expression.charAt(i - 1) != ')')
-                    throw new RuntimeException("Error");
+                {
+                    System.out.println("Error");
+                    System.exit(0);
+                }
 
                 if (operatorStack.isEmpty())
                     operatorStack.push(c);
@@ -494,14 +507,16 @@ public class Evaluator implements IExpressionEvaluator {
         }
 
         if (parentheses != 0)
-            throw new RuntimeException("Error");
+        {
+            System.out.println("Error");
+            System.exit(0);
+        }
 
         return postfix;
     }
 
     public int evaluate(String expression) {
         MyStack<Integer> evaluationStack = new MyStack<Integer>();
-        this.readInts();
 
         for (int i = 0; i < expression.length(); ++i) {
             char c = expression.charAt(i);
@@ -517,13 +532,18 @@ public class Evaluator implements IExpressionEvaluator {
                     operand1 = evaluationStack.pop();
                 } catch (Exception e) {
                     if (c != '-')
-                        throw new RuntimeException("Error");
+                    {
+                        System.out.println("Error");
+                        System.exit(0);
+                    }
                     operand1 = 0;
                 }
                 try {
                     result = performOperation(c, operand1, operand2);
                 } catch (Exception e) {
-                    throw new RuntimeException("Error");
+                    System.out.println("Error");
+                    System.exit(0);
+
                 }
                 evaluationStack.push(result);
             }
@@ -537,6 +557,7 @@ public class Evaluator implements IExpressionEvaluator {
             Evaluator ev = new Evaluator();
             Scanner sc = new Scanner(System.in);
             String infixExpression = sc.nextLine();
+            ev.readInts(sc);
             sc.close();
             String postfixExpression = ev.infixToPostfix(infixExpression);
             int result = ev.evaluate(postfixExpression);
@@ -544,7 +565,8 @@ public class Evaluator implements IExpressionEvaluator {
             System.out.println(postfixExpression);
             System.out.println(result);
         } catch (Exception e) {
-            throw new RuntimeException("Error");
+            System.out.println("Error");
+            System.exit(0);
         }
     }
 }
